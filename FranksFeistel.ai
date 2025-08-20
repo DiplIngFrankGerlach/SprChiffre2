@@ -34,7 +34,7 @@ FranksFeistel::FranksFeistel(int rundenZahl_i)
 
 void FranksFeistel::setzeSchluessel(&String_16 schluesselZK)
 {
-      var PrintfClass pfc;
+      //var PrintfClass pfc;
       var int abtaster = 0;
       for(var int i=0; i < schluessel.sz; i++)
       {
@@ -45,41 +45,42 @@ void FranksFeistel::setzeSchluessel(&String_16 schluesselZK)
             var longlong schlOktetLL = cast(longlong,piOktets[i*j]);
             schlOktetLL = schlOktetLL & 0xFF;
             schlWort = schlWort ^ schlOktetLL;
-            pfc.fstr("ses 2 $").sa(schlWort).pr();
+            //pfc.fstr("ses 2 $").sa(schlWort).pr();
             var char schlZeichen = schluesselZK.getAt(abtaster);
             var longlong schlZeichenLL = cast(longlong,schlZeichen); 
             schlZeichenLL = schlZeichenLL & 0xFF;
-            pfc.fstr("ses 3 $").sa(cast(int,schlZeichen)).pr();
+            //pfc.fstr("ses 3 $").sa(cast(int,schlZeichen)).pr();
             abtaster = (abtaster + 1) % schluesselZK.length();
             schlWort = schlWort ^ schlZeichenLL;
             if(j < 7){ schlWort = schlWort << 8; }
          } 
          schluessel[i] = schlWort;
-         pfc.fstr("ses $ $").sa(i).sa(schlWort).pr();
+         //pfc.fstr("ses $ $").sa(i).sa(schlWort).pr();
       }
 }
 
 /* Feistel-Verschluesselung von 128 bit */
 void FranksFeistel::verschluessle(&longlong links, &longlong rechts)
 {
-   var PrintfClass pfc;
+   //var PrintfClass pfc;
    if(betriebsBereit)
    {
       //Feistel-Leiter mit drei verschiedenen nichtlinearen Funktionen
       for(var int i=0; i < rundenZahl; )
       {
+          var int schluesselStelle = i & 15;
           var longlong verwuerfelt;
-          Nichtlinear::f1(rechts,schluessel[i],verwuerfelt);
+          Nichtlinear::f1(rechts,schluessel[schluesselStelle],verwuerfelt);
           links = links ^ verwuerfelt; 
-          pfc.fstr("Feistel $ $ $").sa(i).sa(links).sa(rechts).pr();
+          //pfc.fstr("Feistel $ $ $").sa(i).sa(links).sa(rechts).pr();
           i++;
 
           var longlong tausch = links;
           links = rechts;
           rechts = tausch;
 
-          Nichtlinear::f2(rechts,schluessel[i],verwuerfelt);
-          pfc.fstr("Feistel $ $ $").sa(i).sa(links).sa(rechts).pr();
+          Nichtlinear::f2(rechts,schluessel[schluesselStelle],verwuerfelt);
+          //pfc.fstr("Feistel $ $ $").sa(i).sa(links).sa(rechts).pr();
           links = links ^ verwuerfelt;
           i++;
 
@@ -87,8 +88,8 @@ void FranksFeistel::verschluessle(&longlong links, &longlong rechts)
           links = rechts;
           rechts = tausch;
 
-          Nichtlinear::f3(rechts,schluessel[i],verwuerfelt);
-          pfc.fstr("Feistel $ $ $").sa(i).sa(links).sa(rechts).pr();
+          Nichtlinear::f3(rechts,schluessel[schluesselStelle],verwuerfelt);
+          //pfc.fstr("Feistel $ $ $").sa(i).sa(links).sa(rechts).pr();
           links = links ^ verwuerfelt;
           i++;
 
@@ -96,8 +97,8 @@ void FranksFeistel::verschluessle(&longlong links, &longlong rechts)
           links = rechts;
           rechts = tausch;
 
-          Nichtlinear::f4(rechts,schluessel[i],verwuerfelt);
-          pfc.fstr("Feistel $ $ $").sa(i).sa(links).sa(rechts).pr();
+          Nichtlinear::f4(rechts,schluessel[schluesselStelle],verwuerfelt);
+          //pfc.fstr("Feistel $ $ $").sa(i).sa(links).sa(rechts).pr();
           links = links ^ verwuerfelt;
           i++;
 
@@ -105,8 +106,8 @@ void FranksFeistel::verschluessle(&longlong links, &longlong rechts)
           links = rechts;
           rechts = tausch;
 
-          Nichtlinear::f5(rechts,schluessel[i],verwuerfelt);
-          pfc.fstr("Feistel $ $ $").sa(i).sa(links).sa(rechts).pr();
+          Nichtlinear::f5(rechts,schluessel[schluesselStelle],verwuerfelt);
+          //pfc.fstr("Feistel $ $ $").sa(i).sa(links).sa(rechts).pr();
           links = links ^ verwuerfelt;
           i++;
 
@@ -156,30 +157,30 @@ char FranksFeistel::gebeOktet()
 
 void Nichtlinear::f1(longlong rechts,longlong schluessel,&longlong ergebnis)
 {
-    var PrintfClass pfc;
+    //var PrintfClass pfc;
     ergebnis = (rechts * schluessel) ^ ( rechts >> 37) ^ (rechts << 28);
-    pfc.fstr("nl f1 $ $ $").sa(rechts).sa(schluessel).sa(ergebnis).pr();
+    //pfc.fstr("nl f1 $ $ $").sa(rechts).sa(schluessel).sa(ergebnis).pr();
 }
 
 void Nichtlinear::f2(longlong rechts,longlong schluessel,&longlong ergebnis)
 {
-   var PrintfClass pfc;
+   //var PrintfClass pfc;
    var longlong nlf = rechts ^ schluessel;
    nlf = (nlf * 0x2fa2cab6e3dce535)  ^  //Mult PI
          (nlf << 17) ^ (nlf >> 47)   ^  //shift
          (nlf << 38) ^ (nlf >> 26)   ^  //shift 2
          (nlf + 0xad1f20ac607c);    //Addition andere PI
    ergebnis = nlf;
-   pfc.fstr("nl f2 $ $ $").sa(rechts).sa(schluessel).sa(ergebnis).pr();
+   //pfc.fstr("nl f2 $ $ $").sa(rechts).sa(schluessel).sa(ergebnis).pr();
 }
 
 void Nichtlinear::f3(longlong rechts,longlong schluessel,&longlong ergebnis)
 {
-   var PrintfClass pfc;
+   //var PrintfClass pfc;
    var longlong zwischen = rechts ^ schluessel;
    var longlong quadrat = zwischen * zwischen;
    ergebnis = quadrat ^ (schluessel << 19) ^ (schluessel >> 51);
-   pfc.fstr("nl f3 $ $ $").sa(rechts).sa(schluessel).sa(ergebnis).pr();
+   //pfc.fstr("nl f3 $ $ $").sa(rechts).sa(schluessel).sa(ergebnis).pr();
 }
 
 void Nichtlinear::f4(longlong rechts,longlong schluessel,&longlong ergebnis)
