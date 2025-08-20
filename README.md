@@ -1,4 +1,4 @@
-#Ein Chiffrierprogramm 
+# Ein Chiffrierprogramm 
 
 Programm zum Verschlüsseln und zum Erzeugen von Prüfsummen, realisiert in der Programmiersprache SAPPEUR.
 Die kryptografisch starke Prüfsumme wird mittels Davies-Meyer-Verfahren berechnet.
