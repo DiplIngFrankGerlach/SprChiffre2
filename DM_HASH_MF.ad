@@ -1,0 +1,27 @@
+
+////////////////////////////////////////////////////////////////////////////////
+// Davies Meyer Hash, generisch
+//
+// $1: Name der zu erzeugenden Klasse
+// $2: Name der Blockchiffre
+
+
+
+
+
+class HashMF
+{
+  longlong pruefSumme[4]; 
+  longlong schluessel[4]; 
+  int anzahlOktetsEingelesen;
+methods:
+  HashMF();
+
+  void verarbeite(&char puffer[],int oktets);
+
+  void gebePruefsumme(&char puffer32[]);
+
+  int verarbeite(&String_16 dateiname);
+};
+
+

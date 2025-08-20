@@ -1,0 +1,27 @@
+
+
+
+class Rotor
+{
+    char funktion[256];
+methods:
+    void initialize(&String_16 key,*char piFeld[], int piIndex); 
+
+};
+
+class CoreEnigma
+{
+   Rotor rotors[3];
+   int staende[3];
+   *char piFeld[];
+   String_16 schluessel;
+methods:
+   CoreEnigma(&String_16 schluessel_i);
+
+   void ladePiFeld();
+
+   void init();
+
+   char encrypt(char c);
+   
+};

@@ -1,0 +1,304 @@
+Import
+{
+   "Strings.ad",
+   "System.ad",
+   "PiQuelle.ad",
+   "FranksFeistel.ad"
+}
+
+/*richte die Chiffre ein(Erzeuge internen 128 oktet Schluessel) */
+FranksFeistel::FranksFeistel(int rundenZahl_i)
+{
+   rundenZahl = rundenZahl_i;
+   betriebsBereit = 1;
+   //String-Schluessel in die interne Schluessel-Struktur einmischen
+   var PiQuelle piQuelle;
+   if(piQuelle.ladeVonPlatte() == 1)
+   {
+        for(var int i=0; i < piOktets.sz;i++)
+        {
+           var int oktet;
+           if(piQuelle.leseOktet(oktet) == 1 )
+           { piOktets[i]= cast(char,oktet);}
+           else
+           { betriebsBereit = 0; }
+        }
+   }
+
+   scZaehler = 0;
+   scLinks = cast(longlong,0);
+   scRechts = cast(longlong,0);
+}
+
+
+
+void FranksFeistel::setzeSchluessel(&String_16 schluesselZK)
+{
+      var PrintfClass pfc;
+      var int abtaster = 0;
+      for(var int i=0; i < schluessel.sz; i++)
+      {
+         var longlong schlWort = 0;
+         for(var int j=0; j < 8; j++)
+         {
+            var int oktet;
+            var longlong schlOktetLL = cast(longlong,piOktets[i*j]);
+            schlOktetLL = schlOktetLL & 0xFF;
+            schlWort = schlWort ^ schlOktetLL;
+            pfc.fstr("ses 2 $").sa(schlWort).pr();
+            var char schlZeichen = schluesselZK.getAt(abtaster);
+            var longlong schlZeichenLL = cast(longlong,schlZeichen); 
+            schlZeichenLL = schlZeichenLL & 0xFF;
+            pfc.fstr("ses 3 $").sa(cast(int,schlZeichen)).pr();
+            abtaster = (abtaster + 1) % schluesselZK.length();
+            schlWort = schlWort ^ schlZeichenLL;
+            if(j < 7){ schlWort = schlWort << 8; }
+         } 
+         schluessel[i] = schlWort;
+         pfc.fstr("ses $ $").sa(i).sa(schlWort).pr();
+      }
+}
+
+/* Feistel-Verschluesselung von 128 bit */
+void FranksFeistel::verschluessle(&longlong links, &longlong rechts)
+{
+   var PrintfClass pfc;
+   if(betriebsBereit)
+   {
+      //Feistel-Leiter mit drei verschiedenen nichtlinearen Funktionen
+      for(var int i=0; i < rundenZahl; )
+      {
+          var longlong verwuerfelt;
+          Nichtlinear::f1(rechts,schluessel[i],verwuerfelt);
+          links = links ^ verwuerfelt; 
+          pfc.fstr("Feistel $ $ $").sa(i).sa(links).sa(rechts).pr();
+          i++;
+
+          var longlong tausch = links;
+          links = rechts;
+          rechts = tausch;
+
+          Nichtlinear::f2(rechts,schluessel[i],verwuerfelt);
+          pfc.fstr("Feistel $ $ $").sa(i).sa(links).sa(rechts).pr();
+          links = links ^ verwuerfelt;
+          i++;
+
+          tausch = links;
+          links = rechts;
+          rechts = tausch;
+
+          Nichtlinear::f3(rechts,schluessel[i],verwuerfelt);
+          pfc.fstr("Feistel $ $ $").sa(i).sa(links).sa(rechts).pr();
+          links = links ^ verwuerfelt;
+          i++;
+
+          tausch = links;
+          links = rechts;
+          rechts = tausch;
+
+          Nichtlinear::f4(rechts,schluessel[i],verwuerfelt);
+          pfc.fstr("Feistel $ $ $").sa(i).sa(links).sa(rechts).pr();
+          links = links ^ verwuerfelt;
+          i++;
+
+          tausch = links;
+          links = rechts;
+          rechts = tausch;
+
+          Nichtlinear::f5(rechts,schluessel[i],verwuerfelt);
+          pfc.fstr("Feistel $ $ $").sa(i).sa(links).sa(rechts).pr();
+          links = links ^ verwuerfelt;
+          i++;
+
+          tausch = links;
+          links = rechts;
+          rechts = tausch;
+      } 
+   }
+   else
+   { 
+     //Fehler
+     links = cast(longlong,0); 
+     rechts = cast(longlong,0); 
+   }
+}
+
+char FranksFeistel::gebeOktet()
+{
+   if(scZaehler == 16)
+   {
+     scRechts = scRechts + 1;
+     //scLinks muss nicht inkrementiert werden, weil 2^63 gross genug ist
+
+     scLinksAusgabe = scLinks;
+     scRechtsAusgabe = scRechts;
+
+     this.verschluessle(scLinks, scRechts);
+
+     scZaehler = 0;
+   }
+
+   var char ret;
+   if(scZaehler < 8 )
+   {
+      ret = cast(char, scLinks  );
+      scLinks = scLinks >> 8;
+   }
+   else
+   {
+      ret = cast(char, scRechts );
+      scRechts = scRechts >> 8;
+   }
+   scZaehler = scZaehler + 1;
+ 
+   return ret;
+}
+
+void Nichtlinear::f1(longlong rechts,longlong schluessel,&longlong ergebnis)
+{
+    var PrintfClass pfc;
+    ergebnis = (rechts * schluessel) ^ ( rechts >> 37) ^ (rechts << 28);
+    pfc.fstr("nl f1 $ $ $").sa(rechts).sa(schluessel).sa(ergebnis).pr();
+}
+
+void Nichtlinear::f2(longlong rechts,longlong schluessel,&longlong ergebnis)
+{
+   var PrintfClass pfc;
+   var longlong nlf = rechts ^ schluessel;
+   nlf = (nlf * 0x2fa2cab6e3dce535)  ^  //Mult PI
+         (nlf << 17) ^ (nlf >> 47)   ^  //shift
+         (nlf << 38) ^ (nlf >> 26)   ^  //shift 2
+         (nlf + 0xad1f20ac607c);    //Addition andere PI
+   ergebnis = nlf;
+   pfc.fstr("nl f2 $ $ $").sa(rechts).sa(schluessel).sa(ergebnis).pr();
+}
+
+void Nichtlinear::f3(longlong rechts,longlong schluessel,&longlong ergebnis)
+{
+   var PrintfClass pfc;
+   var longlong zwischen = rechts ^ schluessel;
+   var longlong quadrat = zwischen * zwischen;
+   ergebnis = quadrat ^ (schluessel << 19) ^ (schluessel >> 51);
+   pfc.fstr("nl f3 $ $ $").sa(rechts).sa(schluessel).sa(ergebnis).pr();
+}
+
+void Nichtlinear::f4(longlong rechts,longlong schluessel,&longlong ergebnis)
+{
+   var longlong zwischen = rechts ^ schluessel;
+   var longlong quadrat = zwischen * zwischen;
+   ergebnis = quadrat ^ (schluessel << 19) ^ (schluessel >> 51);
+}
+
+void Nichtlinear::f5(longlong rechts,longlong schluessel,&longlong ergebnis)
+{
+    var longlong varSchiebung = (rechts >> (schluessel & 0x1F)) ^ (rechts << (schluessel & 0xF)) ^ rechts;
+
+    ergebnis = varSchiebung * varSchiebung; 
+}
+
+ZufallsQuelle::ZufallsQuelle()
+{
+     betriebsBereit = 0;
+     var char puffer[32]; 
+inline_cpp[[
+     #ifdef WIN32
+
+       // Use the system-preferred RNG
+       NTSTATUS status = BCryptGenRandom(
+           nullptr,                          // Use default RNG algorithm
+           (unsigned char*) puffer._array, // Output buffer
+           puffer._sz,            // Size of buffer
+           BCRYPT_USE_SYSTEM_PREFERRED_RNG  // Use system-preferred RNG
+       );
+
+       if (status == 0) {  betriebsBereit = 1; }
+       else { betriebsBereit = 0; }
+
+    #else
+       const char* random_dev = "/dev/urandom";
+
+       // Open /dev/urandom
+       ifstream urandom(random_dev, ios::in|ios::binary);
+       if (!urandom)
+       {
+           cerr << "Konnte keine Zufallszahlen aus /dev/urandom lesen" << endl;
+           betriebsBereit = 0;
+           return;
+       }
+
+       // Read num_bytes octets from /dev/urandom into buffer
+       urandom.read(puffer._array, puffer._sz);
+
+       // Close /dev/urandom
+       urandom.close();
+       char stackPtr;
+    #endif
+
+]]
+    for(var int i=0; i < puffer.sz;i++){ schluessel.append(puffer[i]); }
+
+    fFeistel = new FranksFeistel(16);
+    fFeistel.setzeSchluessel(schluessel);
+    zustandLinks = cast(longlong,0);
+    zustandRechts = cast(longlong,0);
+    abtaster = 0;
+    fFeistel.verschluessle(zustandLinks,zustandRechts);
+
+    betriebsBereit = 1;
+}
+
+int ZufallsQuelle::gebe(&char puffer[],int anzahl)
+{
+  if( betriebsBereit == 0) { return 0; }
+
+  var int rWort;
+  var int nSchub = 0;
+  for(var int i=0; i < anzahl; i++)
+  {
+      var int im4 = i & 3;
+      if(im4 == 0 )
+      {
+        rWort = this.gebe(); 
+        nSchub = 0;
+      }
+      puffer[i] = cast(char, (rWort >> nSchub));
+      nSchub = nSchub + 8;
+  }  
+  return 1;
+}
+
+
+
+/* erzeuge ein PRNG Zufallswort der Laenge 32 bit */
+int ZufallsQuelle::gebe()
+{
+  if(abtaster == 4)
+  { 
+     //betrachte den Schluessel als Zahl und inkrementiert ihn um eins
+     var int oktet;
+     var int i=0;
+     do
+     {
+        oktet = cast(int,schluessel.getAt(i));
+        oktet++;
+        schluessel.setAt(i,cast(char,oktet));
+        i++;
+     }
+     while(oktet == 0);
+     fFeistel.setzeSchluessel(schluessel); 
+     fFeistel.verschluessle(zustandLinks,zustandRechts);//Davies-Meyer Hash des CTR-Schluessel
+     abtaster = 0;
+  }
+  var int ret;
+  if(abtaster < 2)
+  {
+      ret = cast(int,(zustandLinks >>(abtaster*32)));
+  }
+  else
+  {
+      ret =  cast(int,(zustandRechts >>((abtaster - 2)*32)));
+  }
+  abtaster++;
+  return ret;
+}
+

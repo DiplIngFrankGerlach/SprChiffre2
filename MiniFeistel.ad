@@ -1,0 +1,24 @@
+
+
+/* a minimalist Feistel Cipher 
+ * to be used for
+ *
+ * A) block encryption (electronic codebook)
+ * B) counter mode stream cipher
+ * C) HMAC using Davies-Meyer scheme
+ * D) hiqh quality, efficient PRNG
+ *
+ * */
+class MiniFeistel
+{
+   longlong key[4];//256 bit of key
+   int rounds;
+methods:
+   MiniFeistel(&longlong key_i[],int rounds_i);
+
+   MiniFeistel(&String_16 key_i,int rounds_i);
+
+   void encipher(&longlong left,&longlong right);
+   void decipher(&longlong left,&longlong right);
+    
+};

@@ -1,0 +1,12 @@
+
+
+
+class Main
+{
+methods:
+   int main();
+
+   int checkDMHash();
+
+   void testRuns();
+};

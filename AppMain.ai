@@ -1,0 +1,348 @@
+Import 
+{ 
+    "Strings.ad", 
+    "System.ad", 
+    "ZKNuetzlich.ad",
+    "FranksFeistel2.ad", 
+    "FranksFeistel.ad", 
+    "PiQuelle.ad",
+    "ZufallsQuelle.ad",
+    "MiniFeistel.ad",
+    "SuperEnigma.ad",
+    "DM_HASH_MF.ad",
+    "AppMain.ad" 
+}
+
+
+int Main::main()
+{
+   var PrintfClass pfc;
+
+   var CommandlineArgs cla;
+   var int runden;
+   
+
+   var String_16 dateiName;
+   var String_16 schluessel;
+
+   if(cla.numberOfArguments() == 4)
+   {
+      cla.getArgument(1,runden);
+      cla.getArgument(2,schluessel);
+      cla.getArgument(3,dateiName);
+   }
+
+   if(cla.numberOfArguments() == 3)
+   {
+      var String_16 command;
+      cla.getArgument(1,command);
+      cla.getArgument(2,dateiName);
+      if(command.equals("hash") == 1)
+      {
+          var HashMF hasher;
+          var int ret = hasher.verarbeite(dateiName);
+          return ret;
+      }
+   }
+   
+
+   var ZufallsQuelle zquelle;
+   var char initVektor[32];
+
+   var int istVerschluesselung;
+   if(dateiName.endsWith("spc") == 1) { istVerschluesselung = 0; } else { istVerschluesselung = 1;}
+
+   var SPRFile spf(dateiName,1);
+   if(spf.systemHandle() < 0 )
+   {
+      pfc.fstr("could not open plaintext file").pr(); return -1;
+   }
+
+   if( istVerschluesselung == 1)
+   {
+        if(zquelle.gebe(initVektor,32) != 1)
+        {
+            pfc.fstr("could not read generate Initialization Vector").pr();
+            return -1;
+        }
+   }
+   else
+   {
+        if(spf.read(0,32,initVektor) != 32)
+        {
+            pfc.fstr("could not read file(3)").pr();
+            return -1;
+        }            
+   }
+    
+    
+    var String_16 ausgabeDateiName(dateiName);
+         
+    if( istVerschluesselung == 1)
+    { ausgabeDateiName.append(".spc"); }
+    else
+    { 
+        ausgabeDateiName.clear();
+        dateiName.subString(ausgabeDateiName,0,dateiName.length() - 5); 
+    }
+
+    pfc.fstr("ausgabeDateiName: $").sa(ausgabeDateiName).pr();
+
+    var SPRFile spfAusgabe(ausgabeDateiName,0);
+    if(spfAusgabe.systemHandle() < 0 )
+    {
+       pfc.fstr("could not open output file").pr(); return -1;
+    }
+
+    //erzeuge einen Sitzungsschlüssel aus Primaerschluessel und dem Initialisierungsvektor
+    for(var int i=0; i < 32; i++) { schluessel.append(initVektor[i]); }
+    var FranksFeistel  ff2(runden);
+    ff2.setzeSchluessel(schluessel);
+
+    
+    if( istVerschluesselung == 1)
+    {
+        //initvektor schreiben
+        if( spfAusgabe.write(0,32,initVektor) != 32)
+        {  pfc.fstr("could not write into output file(3)").pr(); return -1;  }
+    }
+
+    var int nRead;
+    var int readPos;
+    var int writePos;
+    if( istVerschluesselung == 1)
+    {
+        readPos = 0;
+        writePos = 32;
+    }
+    else 
+    { 
+        readPos = 32;
+        writePos = 0;
+    }
+
+    do
+    {
+        var char buffer[4096];
+        nRead = spf.read(readPos,buffer.sz,buffer);
+        if(nRead > 0)
+        {
+            for(var int i=0; i < nRead;i++) 
+            { 
+                buffer[i] = cast(char, (cast(int,buffer[i]) ^ cast(int,ff2.gebeOktet()) ) ); 
+            }
+            var int nWritten = spfAusgabe.write(writePos,nRead,buffer);
+            if(nWritten != nRead)
+            {  pfc.fstr("could not write into output file(2)").pr(); return -1;  }
+            readPos = readPos + nRead;
+        }
+    }
+    while(nRead > 0);                 
+   
+   return 1; 
+}
+
+//Pruefung von DMHash
+int Main::checkDMHash()
+{
+    for(var int size=1; size < 10000; size++)
+    {
+        var HashMF hash;
+        var char eingabe[10000];
+        for(var int i=0; i < size; i++)
+        {
+            eingabe[i] = cast(char,i);
+        }
+        hash.verarbeite(eingabe,size);
+
+        var char pruefSumme[32];
+        hash.gebePruefsumme(pruefSumme);
+      
+        var HashMF hash2;
+        var char eingabe2[2];
+        for(var int i=0; i < size; i++)
+        { 
+            eingabe2[0] = cast(char,i);
+            hash2.verarbeite(eingabe2,1);
+        }
+        var char pruefSummeKontrolle[32];
+        hash2.gebePruefsumme(pruefSummeKontrolle);
+
+        for(var int i=0; i < 32; i++)
+        {
+            if(pruefSumme[i] != pruefSummeKontrolle[i])
+            {
+                var PrintfClass pfc;
+                pfc.fstr("Pruefsummen stimmen nicht ueberein").pr();
+                return -1;
+            }
+        }       
+    }
+    return 1;
+}
+
+void Main::testRuns()
+{
+   var PrintfClass pfc;
+   var int runden;
+
+//Davies Meyer Hash Testlauf
+   if(1==0)
+   {
+      this.checkDMHash();
+      //return 1;
+
+      var HashMF hash;
+
+      for(var int i=0; i < 199; i++)
+      {
+         var char puffer[2];
+         puffer[0] = cast(char,i);
+
+         hash.verarbeite(puffer,1);
+      }
+      var char pruefSumme[32];
+      hash.gebePruefsumme(pruefSumme);
+      for(var int i=0; i < 32; i++) { pfc.fstr("$ ").saHex(pruefSumme[i]).prNoLF(); }
+      pfc.fstr("").pr();
+    }
+
+    if(1==0)
+    {      
+      var HashMF hash;
+      var char eingabe2[199];
+      for(var int i=0; i < 199; i++)
+      {
+         eingabe2[i] = cast(char,i);
+      }
+      hash.verarbeite(eingabe2,199);
+
+      var char pruefSumme[32];
+      hash.gebePruefsumme(pruefSumme);
+      pfc.fstr("should be identical:").pr();
+      for(var int i=0; i < 32; i++) { pfc.fstr("$ ").saHex(pruefSumme[i]).prNoLF(); }
+      pfc.fstr("").pr();
+
+      var HashMF hash2;
+      eingabe2[0] = cast(char,1);
+      hash2.verarbeite(eingabe2,199);
+      hash2.gebePruefsumme(pruefSumme);
+      pfc.fstr("should be different:").pr();
+      for(var int i=0; i < 32; i++) { pfc.fstr("$ ").saHex(pruefSumme[i]).prNoLF(); }
+      pfc.fstr("").pr();
+
+      //return 1;
+   }
+
+   
+   
+   /*
+   var int runden;
+   if(cla.numberOfArguments() == 2)
+   {
+      cla.getArgument(1, runden);
+   }
+   else { return -1; }
+   */
+
+   if(0 == 1)
+   {
+      var String_16 schluessel("ApfelBirneBrombeere");
+      var CoreEnigma ce(schluessel);
+      ce.ladePiFeld();
+      ce.init();
+      var String_16 ausgabe;
+      for(var int i=0; i < 1000000;i++)
+      {
+          var char c = ce.encrypt('a');
+          ausgabe.clear();
+          ausgabe.appendHexOctet( cast(int,c) & 0xFF );
+          pfc.fstr("$ ").sa(ausgabe).prNoLF();
+      }
+      pfc.fstr("").pr();
+      //return 1;
+   }
+
+   if(0==1)
+   {
+      var PiQuelle piq;
+      if(piq.ladeVonPlatte() == 1)
+      {
+         piq.dumpCharArray();
+         //return 1;
+      }
+      //return -1;
+   }
+
+   
+
+   //MiniFeistel testlauf
+   if(0==1)
+   {
+       var String_16 schluessel("abc123");
+       var MiniFeistel mmf(schluessel,runden);
+
+       var String_16 schluessel2("abc023");
+       var MiniFeistel mmf2(schluessel2,runden);
+
+
+       var String_16 ausgabe;
+       for(var longlong i=0; i < 1000; i = i + 1)
+       {
+           var longlong links = i;
+           var longlong rechts = i + 1;
+
+           mmf.encipher(links,rechts);
+           ZKNuetzlich::wandleHex(links,ausgabe);
+           ausgabe.append("\n"); 
+
+           links = i;
+           rechts = i + 1;
+           mmf2.encipher(links,rechts);
+           ZKNuetzlich::wandleHex(links,ausgabe);
+           ausgabe.append("\n\n"); 
+
+
+           //ZKNuetzlich::wandleHex(rechts,ausgabe);
+           //ausgabe.append("\n"); 
+       }
+       pfc.fstr("$").sa(ausgabe).pr();
+       //return 1;
+   }
+
+   if(1 == 0)
+   {
+       var String_16 ausgabe;
+       for(var longlong i=0; i < 100; i = i + 1)
+       {
+           var String_16 schluessel("abc123");
+           schluessel.append(i);
+           var MiniFeistel mmf(schluessel,runden);
+
+           var String_16 schluessel2("abc124");
+           schluessel2.append(i);
+           var MiniFeistel mmf2(schluessel2,runden);
+           
+         
+           var longlong links = i;
+           var longlong rechts = i + 1;
+
+           mmf.encipher(links,rechts);
+           ZKNuetzlich::wandleHex(links,ausgabe);
+           ausgabe.append("\n"); 
+
+           links = i;
+           rechts = i + 1;
+           mmf2.encipher(links,rechts);
+           ZKNuetzlich::wandleHex(links,ausgabe);
+           ausgabe.append("\n\n"); 
+
+
+           //ZKNuetzlich::wandleHex(rechts,ausgabe);
+           //ausgabe.append("\n"); 
+       }
+       pfc.fstr("$").sa(ausgabe).pr();
+       //return 1;
+   }
+
+}

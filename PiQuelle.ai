@@ -1,0 +1,73 @@
+Import 
+{ 
+    "Strings.ad", 
+    "System.ad",     
+    "PiQuelle.ad"     
+}
+
+PiQuelle::PiQuelle()
+{
+    gueltig = 0;
+    leseZeiger = 0;
+}
+
+
+int PiQuelle::ladeVonPlatte()
+{
+   var SPRFile piDatei("./PiHex.txt",1);
+   var PrintfClass pfc; 
+   
+   if(piDatei.systemHandle() >= 1)
+   {
+      var int l=32*256*2;
+      hexPi = new char[l];
+      if( piDatei.read(0,l,hexPi) == l)
+      {
+         gueltig = 1;
+         return 1;
+      }
+   } 
+   pfc.fstr("konnte PiHex.txt nicht oeffnen").pr();
+   return 0;
+}
+
+int PiQuelle::asciiHexToInt(char c)
+{
+   var String_16 s;
+   s.append(c);
+   var int number = s.asNumber(16); 
+   //var PrintfClass pfc; 
+   //pfc.fstr("[$ $]").sa(c).sa(number).pr(); 
+   return number;
+}
+
+int PiQuelle::leseOktet(&int oktet)
+{
+   var int phbm1 = hexPi.sz - 1;
+   if((gueltig == 1) && (leseZeiger < phbm1))
+   {
+       var char z1 = hexPi[leseZeiger]; 
+       leseZeiger++;
+       var char z2 = hexPi[leseZeiger]; 
+       leseZeiger++;
+       oktet = this.asciiHexToInt(z1);
+       oktet = oktet << 4;
+       oktet = oktet + this.asciiHexToInt(z2);
+       return 1; 
+   }
+   return 0;
+}
+
+void PiQuelle::dumpCharArray()
+{
+    var PrintfClass pfc;
+    var int oktet;
+    while(this.leseOktet(oktet) == 1)
+    {
+        pfc.fstr("   piFeld[i] = cast(char,0x$);i++;").saHex(oktet).pr(); 
+    }   
+}
+
+
+
+

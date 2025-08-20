@@ -1,0 +1,82 @@
+Import{ "Strings.ad", "System.ad", "MiniFeistel.ad" }
+
+
+/* Eine minimalistische Feistel-Chiffre.
+
+   Kann bentutzt werden für pseudo-Zufallszahlengenertoren,
+   als Blockchiffre oder als Grundlage für eine Stromchiffre
+   in der Zähler-Betriebsart.
+
+*/
+
+/*richte Chiffre mit 256 bit Schlüsselvektor ein
+  rounds_i sind die Anzahl der Feistel-Schritte
+*/
+MiniFeistel::MiniFeistel(&longlong key_i[],int rounds_i)
+{
+    for(var int i=0; i < 4; i++)
+    {
+       key[i] = key_i[i];
+    }
+    rounds = rounds_i;
+}
+
+
+/*richte Chiffre mit Zeichenkette als Schlüssel ein
+  rounds_i sind die Anzahl der Feistel-Schritte
+*/
+MiniFeistel::MiniFeistel(&String_16 key_i,int rounds_i)
+{
+    var int anzahl = key_i.length();
+    if(anzahl < 32) { anzahl = 32; }
+
+    //key mit PI initialisieren
+    key[0] = cast(longlong,0x7e0d95748f728eb6);
+    key[1] = cast(longlong,0x58718bcd5882154a);
+    key[2] = cast(longlong,0xee7b54a41dc25a59);
+    key[3] = cast(longlong,0xb59c30d5392af260);
+
+    var int schluesselAbtaster = 0;
+    for(var int i=0; i < anzahl; i++)
+    {
+       var int keyStelle = i & 3;
+       var longlong kEingabe = cast(longlong,key_i.getAt(schluesselAbtaster));
+       key[keyStelle] = key[keyStelle] ^ kEingabe;
+       key[keyStelle] = (key[keyStelle] << 8) ^ (key[keyStelle] >> 56);
+       schluesselAbtaster++;
+       if(schluesselAbtaster == key_i.length()) {schluesselAbtaster = 0; }
+    }
+    //var PrintfClass pfc;
+    //pfc.fstr("Schluessel: $ $ $ $").saHex(key[0]).saHex(key[1]).saHex(key[2]).saHex(key[3]).pr();
+    rounds = rounds_i;
+}
+
+/*verschluessle 256 bit klartext(ECB) */
+void MiniFeistel::encipher(&longlong left,&longlong right)
+{
+      for(var int i=0; i < rounds;i++)
+      {
+         left = left ^ (( (right + 0x30243F6A8885A308) * key[i & 3])  + (right >> 30) + (right << 34));
+          
+         //links und rechts tauschen
+         var longlong speicher = left;
+         left = right; 
+         right = speicher;
+      }
+}
+
+/*entschluessle 256 bit (ECB) */
+void MiniFeistel::decipher(&longlong left,&longlong right)
+{ 
+      //var PrintfClass pfc;
+      for(var int i=rounds - 1; i >= 0;i = i - 1)
+      {
+         //links und rechts tauschen
+         var longlong speicher = left;
+         left = right; 
+         right = speicher;
+          
+         left = left ^ (( (right + 0x30243F6A8885A308) * key[i & 3])  + (right >> 30) + (right << 34));
+         
+      }
+}

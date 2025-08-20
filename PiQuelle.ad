@@ -1,0 +1,20 @@
+//schnullfr
+
+class PiQuelle
+{
+   *char hexPi[];
+   int leseZeiger; 
+   int gueltig;
+methods:
+   PiQuelle();
+
+   int ladeVonPlatte();
+
+   int leseOktet(&int oktet);
+
+   int asciiHexToInt(char c);
+
+   int naechstesOktet(&int oktet);
+
+   void dumpCharArray();
+};
