@@ -1,8 +1,5 @@
 # Ein Feistel Chiffrierprogramm 
 
-[![Alt-Text](https://upload.wikimedia.org/wikipedia/commons/f/fa/Feistel_cipher_diagram_en.svg)](https://upload.wikimedia.org/wikipedia/commons/f/fa/Feistel_cipher_diagram_en.svg)
-
- 
 <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Feistel_cipher_diagram_en.svg" alt="Alt-Text" width="240">
 
 
