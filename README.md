@@ -8,7 +8,7 @@ Die kryptografisch starke Prüfsumme wird mittels Davies-Meyer-Verfahren berechn
 ### Verschlüsseln
 c:\\> SprChiffre2.exe 10 SchillerGoetheVonDerVogelweide Klartext.txt
 
-Dies erzeugt die verschlüsselte Datei Klartext.txt.spc
+Dies erzeugt die verschlüsselte Datei Klartext.txt.spc. Es werden 10 Feistel-Runden gerechnet und der geheime Schlüssel ist "SchillerGoetheVonDerVogelweide".
 
 ### Entschlüsseln
 c:\\> SprChiffre2.exe 10 SchillerGoetheVonDerVogelweide Klartext.txt.spc
