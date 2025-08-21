@@ -13,6 +13,8 @@ Dies erzeugt die verschlüsselte Datei Klartext.txt.spc
 ### Entschlüsseln
 c:\\> SprChiffre2.exe 10 SchillerGoetheVonDerVogelweide Klartext.txt.spc
 
+Dies erzeugt die entschlüsselte Datei Klartext.txt
+
 
 ## Compiler
 Den Sappeur-Compiler gibt es auf der Sappeur Homepage https://sappeur.di-fg.de
