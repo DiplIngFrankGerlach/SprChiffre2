@@ -2,7 +2,11 @@
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Feistel_cipher_diagram_en.svg" alt="Alt-Text" width="240">
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Feistel_cipher_diagram_en.svg" alt="Alt-Text" width="240">
+Das Feistel-Chiffren-Prinzip
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Davies-Meyer_hash.svg" alt="Alt-Text" width="240">
+
+Die kryptografisch starke Davies-Meyer Prüfsumme
 
 
 Programm zum Verschlüsseln und zum Erzeugen von Prüfsummen, realisiert in der Programmiersprache SAPPEUR.
