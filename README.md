@@ -4,7 +4,7 @@ Die kryptografisch starke Prüfsumme wird mittels Davies-Meyer-Verfahren berechn
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Feistel_cipher_diagram_en.svg" alt="Alt-Text" width="240">
 
-Das Feistel-Chiffren-Prinzip
+Das Prinzip der Feistel-Chiffren. Bijektive Abbildung der Eingabe unter Nutzung beliebiger nichtlinearer Funktionen.
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Davies-Meyer_hash.svg" alt="Alt-Text" width="240">
 
