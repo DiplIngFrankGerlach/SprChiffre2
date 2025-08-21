@@ -1,5 +1,5 @@
 # Ein Feistel Chiffrierprogramm 
-Programm zum Verschlüsseln und zum Erzeugen von Prüfsummen, realisiert in der Programmiersprache SAPPEUR.
+Programm zum Verschlüsseln und zum Erzeugen von Prüfsummen, realisiert in der speichersicheren Programmiersprache SAPPEUR.
 Die kryptografisch starke Prüfsumme wird mittels Davies-Meyer-Verfahren berechnet.
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Feistel_cipher_diagram_en.svg" alt="Alt-Text" width="240">
