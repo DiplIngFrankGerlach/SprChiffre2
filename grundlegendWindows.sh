@@ -16,7 +16,7 @@
 compile()
 {
     echo $1
-    ${SPR_VERZ}/compiler/SPRcomp $1 -outputPath output -operatingSystem windows -sappeurDirectory ${SPR_VERZ} 
+    ${SPR_VERZ}/compiler/sc_win $1 -outputPath output -operatingSystem windows -sappeurDirectory ${SPR_VERZ} 
 }
 
 ########################################################

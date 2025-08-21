@@ -19,7 +19,7 @@ export SPR_VERZ=C:\\tmp\\Sappeur_4.12
 
 
 
-source "grundlegend.sh"
+source "grundlegendWindows.sh"
 
 killCoordinator
 
