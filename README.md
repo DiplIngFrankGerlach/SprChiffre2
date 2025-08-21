@@ -15,6 +15,10 @@ c:\\> SprChiffre2.exe 10 SchillerGoetheVonDerVogelweide Klartext.txt.spc
 
 Dies erzeugt die entschlüsselte Datei Klartext.txt
 
+### Kryptografische Prüfsumme berechnen
+
+c:\\> SprChiffre2.exe hash Klartext.txt
+
 
 ## Compiler
 Den Sappeur-Compiler gibt es auf der Sappeur Homepage https://sappeur.di-fg.de
