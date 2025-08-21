@@ -125,7 +125,7 @@ int Main::main()
     {
         var char buffer[4096];
         nRead = spf.read(readPos,buffer.sz,buffer);
-        pfc.fstr("spf.read() == $").sa(nRead).pr();
+        //pfc.fstr("spf.read() == $").sa(nRead).pr();
         if(nRead > 0)
         {
             for(var int i=0; i < nRead;i++) 
