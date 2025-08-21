@@ -1,7 +1,17 @@
-# Ein Chiffrierprogramm 
-
-Programm zum Verschlüsseln und zum Erzeugen von Prüfsummen, realisiert in der Programmiersprache SAPPEUR.
+# Ein Feistel Chiffrierprogramm 
+Programm zum Verschlüsseln und zum Erzeugen von Prüfsummen, realisiert in der speichersicheren Programmiersprache SAPPEUR.
 Die kryptografisch starke Prüfsumme wird mittels Davies-Meyer-Verfahren berechnet.
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Feistel_cipher_diagram_en.svg" alt="Alt-Text" width="240">
+
+Das Prinzip der Feistel-Chiffren. Bijektive Abbildung der Eingabe unter Nutzung beliebiger nichtlinearer Funktionen.
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Davies-Meyer_hash.svg" alt="Alt-Text" width="240">
+
+Die kryptografisch starke Davies-Meyer Prüfsumme
+
+
+
 
 ## Benutzung
 
@@ -24,4 +34,7 @@ c:\\> SprChiffre2.exe hash Klartext.txt
 Den Sappeur-Compiler gibt es auf der Sappeur Homepage https://sappeur.di-fg.de
 
 ## Fertiges Programm zum Download
-Fertiges Windows-Programm: https://github.com/DiplIngFrankGerlach/SprChiffre2/blob/main/Auslieferung/SprChiffre2.exe
+Fertiges Windows-Programm: 
+
+https://github.com/DiplIngFrankGerlach/SprChiffre2/blob/main/Auslieferung/SprChiffre2.exe
+https://github.com/DiplIngFrankGerlach/SprChiffre2/blob/main/PI/PiHex.txt
