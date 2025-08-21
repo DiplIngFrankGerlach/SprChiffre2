@@ -1,0 +1,92 @@
+
+####################################################################
+#Sappeur 4.0 Makefile
+####################################################################
+
+#ls *cpp|sed "s/.cpp$/.o \\\\/g"
+OBJECTS=\
+main.o \
+mapping.o \
+AppMain.o \
+determineStackMemoryNeeds.o \
+determStackMemory_AppMain.ai.o \
+determStackMemory_FranksFeistel.ai.o \
+determStackMemory_MiniFeistel.ai.o \
+determStackMemory_PiQuelle.ai.o \
+determStackMemory_Strings.ai.o \
+determStackMemory_System.ai.o \
+determStackMemory_ZKNuetzlich.ai.o \
+FranksFeistel.o \
+MiniFeistel.o \
+PiQuelle.o \
+placementNewClass_AlphabeticSorter.o \
+placementNewClass_AlphaEntry.o \
+placementNewClass_Assigner_String_128.o \
+placementNewClass_Assigner_String_16.o \
+placementNewClass_Benutzer_Umschalter.o \
+placementNewClass_CommandlineArgs.o \
+placementNewClass_Compare_String_128.o \
+placementNewClass_Compare_String_16.o \
+placementNewClass_FranksFeistel.o \
+placementNewClass_Hash_String_128.o \
+placementNewClass_Hash_String_16.o \
+placementNewClass_HexPrinter.o \
+placementNewClass_Input.o \
+placementNewClass_KeyType4.o \
+placementNewClass_Logfile.o \
+placementNewClass_Main.o \
+placementNewClass_MiniFeistel.o \
+placementNewClass_MTSuperClass.o \
+placementNewClass_MultiThreadAdmin.o \
+placementNewClass_Mutex.o \
+placementNewClass_MutexInfo.o \
+placementNewClass_Nichtlinear.o \
+placementNewClass_NullPtrClassSappeurInternal.o \
+placementNewClass_PiQuelle.o \
+placementNewClass_PrintfClass.o \
+placementNewClass_Semaphore.o \
+placementNewClass_SemaphoreInfo.o \
+placementNewClass_SPRFile.o \
+placementNewClass_String_128.o \
+placementNewClass_String_16.o \
+placementNewClass_StringScanf.o \
+placementNewClass_SystemConstants.o \
+placementNewClass_SystemControl.o \
+placementNewClass_SystemTime.o \
+placementNewClass_ThreadInfo.o \
+placementNewClass_ThreadLocalStorage.o \
+placementNewClass_ThreadLocalStorageEntry.o \
+placementNewClass_ThreadLocalStorageList.o \
+placementNewClass_Umgebung.o \
+placementNewClass_ZKNuetzlich.o \
+placementNewClass_ZufallsQuelle.o \
+ProjektCPP.o \
+Strings.o \
+System.o \
+ZKNuetzlich.o 
+
+
+CC = g++
+HOMEDIR=/home/frank
+SPRDIR=${HOMEDIR}/Sappeur4x/ausg/haupt
+VPATH=${SPRDIR}/cppMapping:../
+
+INCLUDE= -I${SPRDIR}/cppMapping -I. -I..  -I/usr/include
+
+
+
+LDLIBS=-lstdc++ -lm  -std=c++17 -ltls
+.SUFFIXES: .o .cpp .ai
+OPT=-g -std=c++17
+MISC_OPT=-DSPR_USE_PTHREAD_MUTEX_LOCKS=1 -DLINUX_SAPPEUR=1 -DSPR_DEBUG=1 -DSPR_PTHREAD=1 -pthread
+
+.cpp.o:
+	$(CC) $(OPT) $(MISC_OPT) -DGCC_X86 $(INCLUDE) -c $<
+
+
+
+all:$(OBJECTS)
+	$(CC) $(OPT) $(MISC_OPT) -o SprChiffre2_exe $^ $(LDLIBS)
+	
+clean:
+	rm *.o SprChiffre2_exe
