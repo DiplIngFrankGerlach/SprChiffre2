@@ -15,7 +15,7 @@
 ###################################################################################################################
 # Setze das Sappeur Verzeichnis
 ###############################
-export SPR_VERZ=c:\\cygwin64\\home\\bjafrge\\Sappeur4x\\ausg\\haupt
+export SPR_VERZ=~/Sappeur4x/ausg/haupt/
 
 
 

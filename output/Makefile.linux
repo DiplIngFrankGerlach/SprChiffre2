@@ -10,12 +10,15 @@ mapping.o \
 AppMain.o \
 determineStackMemoryNeeds.o \
 determStackMemory_AppMain.ai.o \
+determStackMemory_DM_HASH_MF.ai.o \
 determStackMemory_FranksFeistel.ai.o \
 determStackMemory_MiniFeistel.ai.o \
 determStackMemory_PiQuelle.ai.o \
 determStackMemory_Strings.ai.o \
+determStackMemory_SuperEnigma.ai.o \
 determStackMemory_System.ai.o \
 determStackMemory_ZKNuetzlich.ai.o \
+DM_HASH_MF.o \
 FranksFeistel.o \
 MiniFeistel.o \
 PiQuelle.o \
@@ -27,7 +30,9 @@ placementNewClass_Benutzer_Umschalter.o \
 placementNewClass_CommandlineArgs.o \
 placementNewClass_Compare_String_128.o \
 placementNewClass_Compare_String_16.o \
+placementNewClass_CoreEnigma.o \
 placementNewClass_FranksFeistel.o \
+placementNewClass_HashMF.o \
 placementNewClass_Hash_String_128.o \
 placementNewClass_Hash_String_16.o \
 placementNewClass_HexPrinter.o \
@@ -44,6 +49,7 @@ placementNewClass_Nichtlinear.o \
 placementNewClass_NullPtrClassSappeurInternal.o \
 placementNewClass_PiQuelle.o \
 placementNewClass_PrintfClass.o \
+placementNewClass_Rotor.o \
 placementNewClass_Semaphore.o \
 placementNewClass_SemaphoreInfo.o \
 placementNewClass_SPRFile.o \
@@ -62,9 +68,9 @@ placementNewClass_ZKNuetzlich.o \
 placementNewClass_ZufallsQuelle.o \
 ProjektCPP.o \
 Strings.o \
+SuperEnigma.o \
 System.o \
-ZKNuetzlich.o 
-
+ZKNuetzlich.o \
 
 CC = g++
 HOMEDIR=/home/frank
