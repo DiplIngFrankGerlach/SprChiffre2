@@ -57,6 +57,7 @@ void FranksFeistel::setzeSchluessel(&String_16 schluesselZK)
          schluessel[i] = schlWort;
          //pfc.fstr("ses $ $").sa(i).sa(schlWort).pr();
       }
+      this.verschluessle(scLinks, scRechts);
 }
 
 /* Feistel-Verschluesselung von 128 bit */
@@ -151,6 +152,9 @@ char FranksFeistel::gebeOktet()
       scRechts = scRechts >> 8;
    }
    scZaehler = scZaehler + 1;
+
+   //var PrintfClass pfc;
+   //pfc.fstr("GO $ ").saHex(ret).prNoLF();
  
    return ret;
 }
