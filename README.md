@@ -6,12 +6,12 @@ Die kryptografisch starke Prüfsumme wird mittels Davies-Meyer-Verfahren berechn
 ## Benutzung
 
 ### Verschlüsseln
-c:\> SprChiffre2.exe 10 SchillerGoetheVonDerVogelweide Klartext.txt
+c:\\> SprChiffre2.exe 10 SchillerGoetheVonDerVogelweide Klartext.txt
 
 Dies erzeugt die verschlüsselte Datei Klartext.txt.spc
 
 ### Entschlüsseln
-c:\> SprChiffre2.exe 10 SchillerGoetheVonDerVogelweide Klartext.txt.spc
+c:\\> SprChiffre2.exe 10 SchillerGoetheVonDerVogelweide Klartext.txt.spc
 
 
 ## Compiler
